@@ -8,116 +8,167 @@ use App\Routes\Router;
 class Request {
   
   /**
+   * The get params
+   * 
    * @var array
    */
   protected $query;
 
   /**
+   * The post data
+   * 
    * @var array
    **/
-  protected $request;
+  protected $data;
   
   /**
+   * The session cookies
+   * 
    * @var array
    **/
   protected $cookies;
 
   /**
+   * The files data
+   * 
    * @var array
    **/
   protected $files;
 
   /**
+   * Global variavel $_SERVER
+   * 
    * @var array
    **/
   protected $server;
 
   /**
-   * @var array
-   */
-  protected $method;
-
-  /**
+   * The request header
+   * 
    * @var array
    */
   protected $headers;
 
   /**
+   * The request uri
+   * 
    * @var string
    */
   protected $uri;
   
   /**
+   * The router with all configured routes
+   * 
    * @var App\Routes\Router;
    */
   protected $router;
 
-  protected function __construct(array $query = [], array $request = [], array $cookies = [], array $files = [], array $server = [], Router $router) {
+  protected function __construct(array $query = [], array $data = [], array $cookies = [], array $files = [], array $server = [], Router $router) {
     $this->router = $router;
-    $this->initialize($query, $request, $cookies, $files, $server);
+    $this->initialize($query, $data, $cookies, $files, $server);
   }
 
-  public static function capture($router) {
+  /**
+   * Method for capture and handler with the current request
+   * 
+   * @return void
+   */
+  public static function capture($router): void {
     self::createRequest($_GET, $_POST, $_COOKIE, $_FILES, $_SERVER, $router);
   }
 
-  private static function createRequest(array $query = [], array $request = [], array $cookies = [], array $files = [], array $server = [], Router $router) {
-    return new static($query, $request, $cookies, $files, $server, $router);
+  /**
+   * Create a new Request object with the date of current request
+   * 
+   * @return self
+   */
+  private static function createRequest(array $query = [], array $data = [], array $cookies = [], array $files = [], array $server = [], Router $router): self {
+    return new static($query, $data, $cookies, $files, $server, $router);
   }
 
-  private function initialize(array $query = [], array $request = [], array $cookies = [], array $files = [], array $server = []) {
+  /**
+   * Mapping all data the current request and process it
+   * 
+   * @return void
+   */
+  private function initialize(array $query = [], array $data = [], array $cookies = [], array $files = [], array $server = []): void {
     $this->query    = $query;
-    $this->request  = $request;
+    $this->data     = $data;
     $this->cookies  = $cookies;
     $this->files    = $files;
     $this->server   = $server;
-    $this->headers  = $this->setHeaders($this->server);
-    $this->uri      = $this->setUri();
 
-    /** 
-     * TODO: Improve router injection
-     */
+    $this->setHeaders($this->server);
+    $this->setUri();
+
     $this->dispatch();
   }
 
-  private function setHeaders($server) {
-    $headers = [];
+  /**
+   * Return an array with all header data
+   * 
+   * @return void
+   */
+  private function setHeaders($server): void {
+    $_headers = [];
     foreach($server as $key => $value) {
       if(0 === strpos($key, 'HTTP_')) {
-        $headers[$key] = $value;
+        $_headers[$key] = $value;
       } else if(0 === strpos($key, 'CONTENT_')) {
-        $headers[$key] = $value;
+        $_headers[$key] = $value;
       } else if(0 === strpos($key, 'ACCESS_CONTROL_')) {
-        $headers[$key] = $value;
+        $_headers[$key] = $value;
       }
     }
 
-    return $headers;
+    $this->headers = $_headers;
   }
 
-  public function getUri() {
+  /**
+   * Get current request uri
+   * 
+   * @return string
+   */
+  public function getUri(): string {
     return $this->uri;
   }
 
-  private function setUri() {
-    $uri = strpos($this->server['REQUEST_URI'], '?') ?
+  /**
+   * Set current request uri
+   * 
+   * @return void
+   */
+  private function setUri(): void {
+    $_uri = strpos($this->server['REQUEST_URI'], '?') ?
         ltrim(strstr($this->server['REQUEST_URI'], '?', true), '/') :
         ltrim(strstr($this->server['REQUEST_URI'], '/'), '/');
-    return $uri;
+    $this->uri = $_uri;
   }
 
-  public function getMethods() {
-
-    if(null !== $this->method) {
-      return $this->method;
-    }
+  /**
+   * Get current request post data 
+   * 
+   * @return array
+   */
+  public function getData(): array {
+    return $this->data;
   }
 
-  public function getVerb() {
+  /**
+   * Get current request verb
+   * 
+   * @return String
+   */
+  public function getVerb(): string {
     return $this->server['REQUEST_METHOD'];
   }
 
-  private function dispatch() {
+  /**
+   * Process the current request
+   * 
+   * @return bool
+   */
+  private function dispatch(): bool {
     return $this->router->dispatch($this);
   }
 }
