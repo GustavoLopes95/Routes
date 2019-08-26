@@ -12,6 +12,13 @@ class Route {
   protected $uri;
 
   /**
+   * The compiled uri
+   * 
+   * @var string
+   */
+  protected $compiledURI;
+
+  /**
    * The route verb
    * 
    * @var string
@@ -32,6 +39,13 @@ class Route {
    */
   protected $controller;
 
+  /**
+   * The route params
+   * 
+   * @var array
+   */
+  protected $params;
+  
   /**
    * The route namespace
    * 
@@ -57,9 +71,10 @@ class Route {
     $this->uri = !($uri === '/') ? $uri : '';
     $this->verb = $verb;
     $this->namespace = $namespace;
-    $this->action = $this->makeCallable($action, $namespace);
+    $this->params = [];
+    $this->compiledURI = null;
+    $this->action = $this->makeCallable($action, $namespace);        
   }
-
   
   /**
    * Get the route uri
@@ -95,6 +110,55 @@ class Route {
    */
   public function getNamespace(): String {
     return $this->namespace;
+  }
+
+  /**
+   * Get the route params
+   * 
+   * @return array/null
+   */
+  public function getParams(): ?array {
+    return $this->params;
+  }
+
+  /**
+   * Set the route params
+   * 
+   * @return void
+   */
+  public function setParams(array $params): void {
+    $this->params = $params;
+  }
+
+  /**
+   * Set the route params
+   * 
+   * @return bool
+   */
+  public function isDynamicRoute(): bool {
+    $_uri    = $this->uri;
+    $_params = null;
+
+    preg_match_all("#\{(!)?(\w+)\}#", $_uri, $_params, PREG_SET_ORDER);
+    return isset($_params[0]);
+  }
+
+  /**
+   * Get compiled route URI
+   * 
+   * @return string/null
+   */
+  public function getCompiledURI(): ?string {
+    return $this->compiledURI;
+  }
+
+  /**
+   * Set compiled route URI
+   * 
+   * @return string
+   */
+  public function setCompiledURI(String $uri): void {
+    $this->compiledURI = $uri;
   }
 
   /**

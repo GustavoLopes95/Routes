@@ -33,6 +33,8 @@ class RoutesColletion {
    * @return Route/null
    */
   public function matchRoute(Request $request) {
+    $this->compileRoute($request);
+
     $routes = $this->getRoutes($request->getVerb());
     $route = $this->filterRoute($routes, $request);
     
@@ -50,7 +52,7 @@ class RoutesColletion {
    */
   public function filterRoute(Array $routes, Request $request) {
     $route = array_filter($routes, function($route) use($request) {
-      return $route->getUri() === $request->getUri();
+      return ($route->getCompiledURI() ?? $route->getUri()) === $request->getUri();
     });
 
     return array_shift($route);
@@ -62,7 +64,62 @@ class RoutesColletion {
    * 
    * @return Route[]
    */
-  protected function getRoutes(String $verb = null) {
-    return is_null($verb) ? $this->routes : $this->routes[$verb];
+  protected function getRoutes(?string $verb): array {
+    return !$verb ? $this->routes : $this->routes[$verb];
+  }
+
+  /**
+   * Compile the current request params into matches static routes uri
+   * 
+   * @return void
+   */
+  private function compileRoute(Request $request): void {
+    $_routes = $this->getRoutes($request->getVerb());
+
+    foreach ($_routes as $key => $route) {
+      if(!$route->isDynamicRoute()) continue;
+
+      list($requestParams, $resources) = $this->getCurrentUriParams($request);
+
+      $compiledURI = $this->getCompiledURI($requestParams, $resources, $route);
+      
+      $route->setParams($requestParams);
+      $route->setCompiledURI($compiledURI);
+    }
+  }
+
+  /**
+   * Get the current uri params and resources
+   * 
+   * @return array
+   */
+  private function getCurrentUriParams(Request $request): array {
+    $_uri = explode('/', $request->getUri());
+    foreach($_uri as $k => $v) {
+      $k % 2 != 0 ? 
+        $requestParams[] = $v :
+        $resources[] = $v;
+    };
+
+    return [$requestParams, $resources];
+  }
+
+  /**
+   * Get the static uri compiled with of the params of the current uri
+   * 
+   * @return string
+   */
+  private function getCompiledURI(array $params, array $resources, Route $route): string {
+    $_compiledURI = '';
+    preg_match_all('#\{(!)?(\w+)\}#', $route->getUri(), $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
+    foreach ($matches as $key => $match) {
+      $routeParams[] = $params[$key];
+
+      //replace in static url
+      if(strlen($_compiledURI) > 0) $_compiledURI .= '/';
+      $_compiledURI .= $resources[$key] . '/' . $params[$key];
+    }
+
+    return $_compiledURI;
   }
 }

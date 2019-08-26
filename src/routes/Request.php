@@ -150,8 +150,21 @@ class Request {
    * 
    * @return array
    */
-  public function getData(): array {
-    return $this->data;
+  public function getPost(?string $name): array {
+    if(count($this->data) === 0) return [];
+
+    return !$name ? $this->data: $this->data[$name];
+  }
+
+  /**
+   * Get current request get data 
+   * 
+   * @return array
+   */
+  public function query(?string $name): array {
+    if(count($this->query) === 0) return [];
+    
+    return !$name ? $this->query: $this->query[$name];
   }
 
   /**

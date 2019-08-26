@@ -66,7 +66,7 @@ class Router {
 
     if (!is_array($route->getAction()) && 
         is_callable($route->getAction())) {
-          call_user_func($route->getAction());
+          call_user_func($route->getAction(), $request->getPost(null));
           return true;
     }
     
@@ -77,12 +77,11 @@ class Router {
         throw new \RuntimeException("The method [{$method}] don't exists into controller [{$controller}]", self::METHOD_NOT_EXISTS);
       }
 
-      if(is_array($request->getData())) {
-        $controllerInstance->$method($request->getData());
-      } else {
-        $controllerInstance->$method();
+      if($route->getParams()) {
+        call_user_func_array([$controllerInstance, $method], array_merge([$request], $route->getParams()));
+        return true;
       }
-      
+      $controllerInstance->$method($request);      
       return true;
     }
     

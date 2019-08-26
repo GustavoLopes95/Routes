@@ -16,19 +16,19 @@ class UserController {
     //logic
   }
   
-  public function show($id) {
+  public function show($request, $id) {
     //logic
   }
 
-  public function edit($id) {
+  public function edit($request, $id) {
     //logic
   }
 
-  public function update($data) {
+  public function update($request, $id) {
     //logic
   }
 
-  public function destroy($id) {
+  public function destroy($request, $id) {
     //logic
   }
 }
