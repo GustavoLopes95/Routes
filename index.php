@@ -4,9 +4,12 @@
 
   use App\Routes\Router;
   use App\Routes\Request;
+  use App\Routes\RoutesColletion;
+  use App\Routes\RoutesCompiler;
 
-
-  $router = new Router();
+  $routeCompiler   = new RoutesCompiler();
+  $routesColletion = new RoutesColletion($routeCompiler);
+  $router = new Router($routesColletion);
 
   $router->get('/', function() {
     require_once 'src/Views/form.list.php';

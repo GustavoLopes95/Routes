@@ -37,8 +37,8 @@ class Router {
   /** @const int Method Not Exists */
   private const METHOD_NOT_EXISTS = 1;
 
-  public function __construct() {
-    $this->routes = new RoutesColletion;
+  public function __construct(IRoutesColletion $routesColletion) {
+    $this->routes = $routesColletion;
     $this->setNamespace();
   }
 
@@ -48,7 +48,7 @@ class Router {
    * 
    * @return bool
    */
-  public function dispatch(Request $request): bool {
+  public function dispatch(IRequest $request): bool {
     return $this->dispatchToRouter($request);
   }
 
@@ -57,7 +57,7 @@ class Router {
    * 
    * @return bool
    */
-  private function dispatchToRouter(Request $request): bool {
+  private function dispatchToRouter(IRequest $request): bool {
     $route = $this->routes->matchRoute($request);
     
     if(is_null($route)) {
@@ -93,7 +93,7 @@ class Router {
    * 
    * @return void
    */
-  private function add(Route $route): void {
+  private function add(IRoute $route): void {
     $this->routes->add($route);
   }
 
@@ -102,7 +102,7 @@ class Router {
    * 
    * @return Route
    */
-  private function createRoute(String $uri, $action, String $verb): Route {
+  private function createRoute(String $uri, $action, String $verb): IRoute {
     return new Route($uri, $action, $verb, $this->getNamespace());
   }
 

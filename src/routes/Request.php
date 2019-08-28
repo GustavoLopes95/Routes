@@ -2,7 +2,7 @@
 
 namespace App\Routes;
 
-use App\Routes\Router;
+use App\Routes\Contract\IRouter;
 
 /** Handle with Request */
 class Request {
@@ -63,7 +63,7 @@ class Request {
    */
   protected $router;
 
-  protected function __construct(array $query = [], array $data = [], array $cookies = [], array $files = [], array $server = [], Router $router) {
+  protected function __construct(array $query = [], array $data = [], array $cookies = [], array $files = [], array $server = [], IRouter $router) {
     $this->router = $router;
     $this->initialize($query, $data, $cookies, $files, $server);
   }
@@ -73,7 +73,7 @@ class Request {
    * 
    * @return void
    */
-  public static function capture($router): void {
+  public static function capture(IRouter $router): void {
     self::createRequest($_GET, $_POST, $_COOKIE, $_FILES, $_SERVER, $router);
   }
 
@@ -82,7 +82,7 @@ class Request {
    * 
    * @return self
    */
-  private static function createRequest(array $query = [], array $data = [], array $cookies = [], array $files = [], array $server = [], Router $router): self {
+  private static function createRequest(array $query = [], array $data = [], array $cookies = [], array $files = [], array $server = [], IRouter $router): self {
     return new static($query, $data, $cookies, $files, $server, $router);
   }
 

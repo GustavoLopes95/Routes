@@ -2,7 +2,10 @@
 
 namespace App\Routes;
 
-class RoutesColletion {
+use App\Routes\Contract\IRoute;
+use App\Routes\Contract\IRequest;
+
+class RoutesColletion implements IRoutesColletion {
 
   /**
    * Collection of routes registered in the application
@@ -16,7 +19,7 @@ class RoutesColletion {
    * 
    * @return Route
    */
-  public function add(Route $route): Route {
+  public function add(IRoute $route): IRoute {
     $verb     = $route->getVerb();
     $resource = $route->getUri();
 
@@ -32,7 +35,7 @@ class RoutesColletion {
    * 
    * @return Route/null
    */
-  public function matchRoute(Request $request) {
+  public function matchRoute(IRequest $request): ?IRoute {
     $this->compileRoute($request);
 
     $routes = $this->getRoutes($request->getVerb());
@@ -50,7 +53,7 @@ class RoutesColletion {
    * 
    * @return Route/array
    */
-  public function filterRoute(Array $routes, Request $request) {
+  public function filterRoute(Array $routes, IRequest $request) {
     $route = array_filter($routes, function($route) use($request) {
       return ($route->getCompiledURI() ?? $route->getUri()) === $request->getUri();
     });
@@ -73,7 +76,7 @@ class RoutesColletion {
    * 
    * @return void
    */
-  private function compileRoute(Request $request): void {
+  private function compileRoute(IRequest $request): void {
     $_routes = $this->getRoutes($request->getVerb());
 
     foreach ($_routes as $key => $route) {
@@ -109,7 +112,7 @@ class RoutesColletion {
    * 
    * @return string
    */
-  private function getCompiledURI(array $params, array $resources, Route $route): string {
+  private function getCompiledURI(array $params, array $resources, IRoute $route): string {
     $_compiledURI = '';
     preg_match_all('#\{(!)?(\w+)\}#', $route->getUri(), $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
     foreach ($matches as $key => $match) {

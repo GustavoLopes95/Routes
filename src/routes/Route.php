@@ -2,7 +2,7 @@
 
 namespace App\Routes;
 
-class Route {
+class Route implements IRoute {
 
   /**
    * The route uri
