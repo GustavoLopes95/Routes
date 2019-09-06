@@ -2,6 +2,14 @@
 
 namespace App\Routes;
 
+use App\Routes\Contract\IRoute;
+
+/**
+ * Route class
+ * 
+ * @author Luiz Gustavo A. Lopes <https://github.com/GustavoLopes95>
+ * @package 
+ */
 class Route implements IRoute {
 
   /**

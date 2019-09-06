@@ -4,8 +4,16 @@ namespace App\Routes;
 
 use App\Routes\Contract\IRoute;
 use App\Routes\Contract\IRequest;
+use App\Routes\Contract\IRoutesCollection;
 
-class RoutesColletion implements IRoutesColletion {
+/**
+ * RoutesColletion class
+ * 
+ * @author Luiz Gustavo A. Lopes <https://github.com/GustavoLopes95>
+ * @package 
+ */
+class RoutesCollection implements IRoutesCollection
+{
 
   /**
    * Collection of routes registered in the application
@@ -67,7 +75,7 @@ class RoutesColletion implements IRoutesColletion {
    * 
    * @return Route[]
    */
-  protected function getRoutes(?string $verb): array {
+  private function getRoutes(?string $verb): array {
     return !$verb ? $this->routes : $this->routes[$verb];
   }
 
@@ -84,7 +92,7 @@ class RoutesColletion implements IRoutesColletion {
 
       list($requestParams, $resources) = $this->getCurrentUriParams($request);
 
-      $compiledURI = $this->getCompiledURI($requestParams, $resources, $route);
+      $compiledURI = RoutesCompiler::compiler($requestParams, $resources, $route);
       
       $route->setParams($requestParams);
       $route->setCompiledURI($compiledURI);
@@ -105,24 +113,5 @@ class RoutesColletion implements IRoutesColletion {
     };
 
     return [$requestParams, $resources];
-  }
-
-  /**
-   * Get the static uri compiled with of the params of the current uri
-   * 
-   * @return string
-   */
-  private function getCompiledURI(array $params, array $resources, IRoute $route): string {
-    $_compiledURI = '';
-    preg_match_all('#\{(!)?(\w+)\}#', $route->getUri(), $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
-    foreach ($matches as $key => $match) {
-      $routeParams[] = $params[$key];
-
-      //replace in static url
-      if(strlen($_compiledURI) > 0) $_compiledURI .= '/';
-      $_compiledURI .= $resources[$key] . '/' . $params[$key];
-    }
-
-    return $_compiledURI;
   }
 }

@@ -4,11 +4,11 @@
 
   use App\Routes\Router;
   use App\Routes\Request;
-  use App\Routes\RoutesColletion;
+  use App\Routes\RoutesCollection;
   use App\Routes\RoutesCompiler;
 
   $routeCompiler   = new RoutesCompiler();
-  $routesColletion = new RoutesColletion($routeCompiler);
+  $routesColletion = new RoutesCollection($routeCompiler);
   $router = new Router($routesColletion);
 
   $router->get('/', function() {

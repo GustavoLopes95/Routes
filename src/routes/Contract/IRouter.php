@@ -1,8 +1,10 @@
 <?php
 
-use IRequest;
+namespace App\Routes\Contract;
 
-interface IRouter {
+use App\Routes\Contract\IRequest;
 
+interface IRouter
+{
   function dispatch(IRequest $request): bool;
 }

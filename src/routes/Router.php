@@ -2,11 +2,21 @@
 
 namespace App\Routes;
 
+use App\Routes\Contract\IRouter;
+use App\Routes\Contract\IRequest;
+
 use App\Routes\Route;
 use App\Routes\Request;
 use App\Routes\RoutesColletion;
 
-class Router {
+/**
+ * Router class
+ * 
+ * @author Luiz Gustavo A. Lopes <https://github.com/GustavoLopes95>
+ * @package 
+ */
+class Router implements IRouter
+{
 
   /**
    * Registered routes

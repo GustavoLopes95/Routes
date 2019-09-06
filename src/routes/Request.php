@@ -3,9 +3,15 @@
 namespace App\Routes;
 
 use App\Routes\Contract\IRouter;
+use App\Routes\Contract\IRequest;
 
-/** Handle with Request */
-class Request {
+/**
+ * Request class
+ * 
+ * @author Luiz Gustavo A. Lopes <https://github.com/GustavoLopes95>
+ * @package 
+ */
+class Request implements IRequest {
   
   /**
    * The get params

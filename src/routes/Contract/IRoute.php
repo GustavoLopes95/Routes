@@ -1,10 +1,12 @@
 <?php
 
-interface IRoute {
+namespace App\Routes\Contract;
 
-  function  getVerb(): string;
-  function  getUri(): string;
-  function  getCompiledURI(): string;
-  function  setParams(): void;
-  function  setCompiledURI(): void;  
+interface IRoute
+{
+  function getVerb(): string;
+  function getUri(): string;
+  function getCompiledURI(): string;
+  function setParams(): void;
+  function setCompiledURI(): void;
 }
